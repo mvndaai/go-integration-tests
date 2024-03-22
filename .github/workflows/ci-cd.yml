@@ -31,7 +31,10 @@ jobs:
     - run: |
         export PATH=$PATH:`go env GOPATH`/bin
         go install github.com/jstemmer/go-junit-report@latest
-        go test ./integration/... | go-junit-report -set-exit-code > report.xml
+        go test ./... | go-junit-report -set-exit-code > report.xml
+
+
+    # go test ./integration/... | go-junit-report -set-exit-code > report.xml   
     - name: Test Summary
       uses: test-summary/action@v1
       with:
