@@ -23,6 +23,11 @@ func TestEcho(t *testing.T) {
 			in:       "👍",
 			expected: "👍",
 		},
+		{
+			name:     "failing",
+			in:       "a",
+			expected: "b",
+		},
 	}
 
 	for _, tt := range tests {
