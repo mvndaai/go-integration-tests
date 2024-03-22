@@ -1,25 +1,11 @@
 package integration_test
 
 import (
-	"os"
-	"os/exec"
-	"path/filepath"
 	"testing"
 
+	"github.com/mvndaai/go-integration-tests/integration"
 	"github.com/stretchr/testify/assert"
 )
-
-func runIntegration(args ...string) (string, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	mainPath := filepath.Join(wd, "..", "main.go")
-	args = append([]string{"run", mainPath}, args...)
-	cmd := exec.Command("go", args...)
-	b, err := cmd.CombinedOutput()
-	return string(b), err
-}
 
 func TestIntegration(t *testing.T) {
 	tests := []struct {
@@ -41,7 +27,7 @@ func TestIntegration(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual, err := runIntegration(tt.in)
+			actual, err := integration.RunIntegration(tt.in)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.expected, actual)
 		})
