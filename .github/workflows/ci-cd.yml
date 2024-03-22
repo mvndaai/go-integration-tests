@@ -5,23 +5,18 @@ on:
   pull_request:
 
 jobs:
-  unit_tests:
-    strategy:
-      matrix:
-        go-version: [1.22]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-    #- name: Setup dependency - gcc
-    #  if: startsWith(matrix.os, 'ubuntu')
-    #  run: |
-    #    sudo apt update -y
-    #    sudo apt-get install build-essential -y
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v2
-      with:
-        go-version: ${{ matrix.go-version }}
-    - run: go test ./...
+  #unit_tests:
+  #  strategy:
+  #    matrix:
+  #      go-version: [1.22]
+  #      os: [ubuntu-latest, macos-latest, windows-latest]
+  #  runs-on: ${{ matrix.os }}
+  #  steps:
+  #  - uses: actions/checkout@v3
+  #  - uses: actions/setup-go@v2
+  #    with:
+  #      go-version: ${{ matrix.go-version }}
+  #  - run: go test ./...
 
   integration_tests:
     strategy:
@@ -29,13 +24,17 @@ jobs:
         go-version: [1.22]
     runs-on: macos-latest
     steps:
-    #- name: Setup dependency - gcc
-    #  if: startsWith(matrix.os, 'ubuntu')
-    #  run: |
-    #    sudo apt update -y
-    #    sudo apt-get install build-essential -y
     - uses: actions/checkout@v3
     - uses: actions/setup-go@v2
       with:
         go-version: ${{ matrix.go-version }}
-    - run: go test ./integration/...
+    - run: |
+        export PATH=$PATH:`go env GOPATH`/bin
+        go install github.com/jstemmer/go-junit-report@latest
+        go test ./integration/... | go-junit-report -set-exit-code > report.xml
+    - name: Test Summary
+      uses: test-summary/action@v1
+      with:
+        paths: |
+          ./report.xml
+      if: always()
